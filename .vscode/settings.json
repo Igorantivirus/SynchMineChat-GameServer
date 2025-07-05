@@ -2,6 +2,7 @@
   "cmake.defaultVariants": {
     "buildType": "Release"
   },
+  "C_Cpp.default.cppStandard": "c++20",
   "cmake.configureOnOpen": false,
   "cmake.configureOnEdit": false,
   "files.associations": {
@@ -74,6 +75,30 @@
     "xtr1common": "cpp",
     "xtree": "cpp",
     "xutility": "cpp",
-    "CMakeLists.txt": "cmake"
+    "CMakeLists.txt": "cmake",
+    "any": "cpp",
+    "cfenv": "cpp",
+    "chrono": "cpp",
+    "codecvt": "cpp",
+    "condition_variable": "cpp",
+    "coroutine": "cpp",
+    "csignal": "cpp",
+    "cstdarg": "cpp",
+    "cwctype": "cpp",
+    "deque": "cpp",
+    "resumable": "cpp",
+    "filesystem": "cpp",
+    "forward_list": "cpp",
+    "future": "cpp",
+    "memory_resource": "cpp",
+    "mutex": "cpp",
+    "queue": "cpp",
+    "random": "cpp",
+    "ranges": "cpp",
+    "ratio": "cpp",
+    "shared_mutex": "cpp",
+    "span": "cpp",
+    "stop_token": "cpp",
+    "thread": "cpp"
   }
 }
