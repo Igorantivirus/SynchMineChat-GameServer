@@ -1,0 +1,82 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "CMake: Clean",
+            "type": "shell",
+            "command": "cmake",
+            "args": [
+                "-E", "rm",
+                "-rf", "build"
+            ],
+            "problemMatcher": []
+        },
+        {
+            "label": "CMake: Configure",
+            "type": "shell",
+            "command": "cmake",
+            "args": [
+                "-B", "build",
+                "-G", "Visual Studio 17 2022",
+                "-DCMAKE_TOOLCHAIN_FILE=D:/vcpkg/scripts/buildsystems/vcpkg.cmake",
+                "-DVCPKG_TARGET_TRIPLET=x64-windows"
+            ],
+            "group": "build",
+            "problemMatcher": []
+        },
+        {
+            "label": "CMake: Build",
+            "type": "shell",
+            "command": "cmake",
+            "args": [
+                "--build", "build",
+                "--config", "${config:cmake.defaultVariants.buildType}"
+            ],
+            "group": "build",
+            "problemMatcher": [
+                "$gcc"
+            ]
+        },
+        {
+            "label": "CMake: Run",
+            "type": "shell",
+            "command": "${workspaceFolder}/build/${config:cmake.defaultVariants.buildType}/main",
+            "group": "build",
+            "presentation": {
+                "reveal": "always",
+                "panel": "new",
+                "clear": true
+            }
+        },
+        {
+            "label": "CMake: Build & Run",
+            "dependsOrder": "sequence",
+            "dependsOn": [
+                "CMake: Build",
+                "CMake: Run"
+            ],
+            "group": "build"
+        },
+        {
+            "label": "CMake: Configure & Build & Run",
+            "dependsOrder": "sequence",
+            "dependsOn": [
+                "CMake: Configure",
+                "CMake: Build",
+                "CMake: Run"
+            ],
+            "group": "build"
+        },
+        {
+            "label": "CMake: Clean Reconfigure & Build & Run",
+            "dependsOrder": "sequence",
+            "dependsOn": [
+                "CMake: Clean",
+                "CMake: Configure",
+                "CMake: Build",
+                "CMake: Run"
+            ],
+            "group": "build"
+        }
+    ]
+}
