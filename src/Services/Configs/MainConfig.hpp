@@ -9,10 +9,11 @@ struct MainConfig
 {
     std::string LOG_FILE;
 
+    std::string MINECRAFT_LOG_FILE;
     std::string SERVER_URL;
     std::string SERVER_PORT;
 
-    NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(MainConfig, LOG_FILE, SERVER_URL, SERVER_PORT)
+    NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(MainConfig, LOG_FILE, MINECRAFT_LOG_FILE, SERVER_URL, SERVER_PORT)
 };
 
 inline MainConfig loadMainConfig(const std::string &config_path)
