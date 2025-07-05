@@ -99,6 +99,9 @@
     "shared_mutex": "cpp",
     "span": "cpp",
     "stop_token": "cpp",
-    "thread": "cpp"
+    "thread": "cpp",
+    "numeric": "cpp",
+    "set": "cpp",
+    "valarray": "cpp"
   }
 }
