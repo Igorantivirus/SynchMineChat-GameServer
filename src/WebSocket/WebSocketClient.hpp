@@ -1,9 +1,7 @@
 #pragma once
 
 #include <string>
-#include <thread>
 #include <mutex>
-#include <memory>
 #include <atomic>
 #include <functional>
 
@@ -11,8 +9,6 @@
 #include <boost/asio.hpp>
 
 #include "../Services/Service.hpp"
-
-#include "../AsynchContainers/AsynchQueue.hpp"
 
 #include "Utils.hpp"
 #include "WebSocketEvents.hpp"
@@ -47,11 +43,13 @@ public:
             isConnected_ = true;
             readSetAsyncTask();
             events_.onConnectF_();
+            Service::log.log("Sucsess connect to server!", LogLevel::Info);
             return true;
         }
         catch (const beast::system_error &e)
         {
             isConnected_ = false;
+            Service::log.log("Failed to connect to server!", LogLevel::Error);
             return false;
         }
     }
@@ -68,6 +66,7 @@ public:
         catch (...)
         {}
         events_.onCloseF_(code);
+        Service::log.log("Disconnect from server!", LogLevel::Info);
         isConnected_ = false;
     }
 
@@ -132,12 +131,10 @@ private:
         {
             events_.onMessageF_(beast::buffers_to_string(readBuffer.data()));
             if(isConnected_)
-                readSetAsyncTask();  // Запускаем следующий цикл чтения
+                readSetAsyncTask();  // Следующий цикл чтения
         }
         else
-        {
             disconnect(websocket::close_code::internal_error);//Просто закроем соединение
-        }
         readBuffer.consume(readBuffer.size()); // Очищаем буфер
     }
 
