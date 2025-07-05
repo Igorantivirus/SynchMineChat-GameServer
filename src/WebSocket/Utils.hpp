@@ -8,3 +8,4 @@ namespace websocket = boost::beast::websocket;
 namespace net       = boost::asio;
 using tcp           = boost::asio::ip::tcp;
 
+class WebSocketClient;
