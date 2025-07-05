@@ -1,4 +1,5 @@
 /build
 /resources/MainConfig.json
 /resources/MinecraftLogs
+/resources/ParserSettingsConfig.json
 /log/log.log
