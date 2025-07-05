@@ -1,6 +1,6 @@
 {
   "cmake.defaultVariants": {
-    "buildType": "Release"
+    "buildType": "Debug"
   },
   "C_Cpp.default.cppStandard": "c++20",
   "cmake.configureOnOpen": false,
