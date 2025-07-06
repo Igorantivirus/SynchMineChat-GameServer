@@ -143,7 +143,7 @@ private:
         
         resMsg.from = ClientType::minecraft;
         resMsg.to = ClientType::any;
-        resMsg.type = MessageType::text;
+        resMsg.type = msg.type;
         resMsg.msg["userName"] = msg.playerName;
         resMsg.msg["text"] = msg.msg;
         
