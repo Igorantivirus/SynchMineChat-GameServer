@@ -30,6 +30,11 @@ public:
             if(msg.parseFromString(line))
                 queue.push(msg);
 
+        // if(queue.size() > 1)
+        // {
+        //     std::cout << "A\n";
+        // }
+
         logFile.close();
     }
 
@@ -49,8 +54,12 @@ private:
 
         std::streamsize lastSize = getLastPos();
 
-        logFile.seekg(lastSize > fileSize ? std::streamsize(0) : lastSize, std::ios_base::beg);
-        outLastPosFile(fileSize);
+        if(lastSize < fileSize)
+        {
+            logFile.seekg(lastSize, std::ios_base::beg);
+            outLastPosFile(fileSize);
+        }
+
     }
 
     void checkLastPosFile()
