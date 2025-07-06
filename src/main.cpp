@@ -25,6 +25,7 @@ void onDisconnect(websocket::close_code)
 
 #include "Parser/Utils.hpp"
 
+#include "MinecraftChat/MinecraftChatAPI.hpp"
 
 #include "Parser/Parser.hpp"
 
