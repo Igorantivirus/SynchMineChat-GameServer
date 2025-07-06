@@ -25,9 +25,21 @@ public:
         return rconClient_.connected;
     }
 
-    void start()
+    bool start()
     {
-        rconClient_.start(true);
+        try
+        {
+            rconClient_.start(true);
+        }
+        catch(const std::exception& e)
+        {
+            Service::log.log(std::string("Std error from rcon start: ") + e.what(), LogLevel::Error);
+        }
+        catch(...)
+        {
+            Service::log.log("Error to start rcon.", LogLevel::Error);
+        }
+        return rconClient_.connected;
     }
 
     void sendMessage(const Message& message)
