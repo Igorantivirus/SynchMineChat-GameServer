@@ -32,6 +32,8 @@ public:
             reconnectToServer();
         pollClientThPtr_ = std::make_unique<std::thread>(&WebChatProcessor::otherThreadToWebSpcketPoll, this);
 
+        chat_.start();
+
         while(isWorking_)
         {
             if(!chat_.isConnected())
