@@ -61,6 +61,8 @@ public:
             return parseJoin(str, pos);
         if (pos = str.find("left the game"); pos != std::string::npos)
             return parseLeft(str, pos);
+        if (pos = str.find("has made the advancement"); pos != std::string::npos)
+            return parseAchievement(str, pos);
         return false;
     }
 
@@ -95,5 +97,18 @@ private:
         type = LogType::left;
         return true;
     }
+    bool parseAchievement(const std::string& str, const std::size_t pos)
+    {
+        std::size_t begin = 0;
+        for(begin = pos - 1; begin != 0 && str[begin - 1] != ' ';--begin);
+        std::size_t end = pos - 1;
+        playerName = str.substr(begin, end - begin);
+        
+        begin = str.find('[', pos) + 1;
+        end = str.find(']', begin);
+        msg = str.substr(begin, end - begin);
+        type = LogType::achievement;
 
+        return true;
+    }
 };
