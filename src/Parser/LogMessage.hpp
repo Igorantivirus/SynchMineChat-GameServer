@@ -5,7 +5,7 @@
 enum class LogType : unsigned char
 {
     none = 0,
-    message,
+    text,
     left,
     join,
     achievement
@@ -15,7 +15,7 @@ std::string toString(const LogType type)
 {
     switch (type)
     {
-        case LogType::message:      return "message";
+        case LogType::text:      return "text";
         case LogType::left:         return "left";
         case LogType::join:         return "join";
         case LogType::achievement:  return "achievement";
@@ -25,8 +25,8 @@ std::string toString(const LogType type)
 
 LogType toLogType(const std::string& str)
 {
-    if(str == "message")
-        return LogType::message;
+    if(str == "text")
+        return LogType::text;
     if(str == "left")
         return LogType::left;
     if(str == "join")
@@ -74,7 +74,7 @@ private:
         std::size_t end = str.find('>', pos);
         playerName = str.substr(begin, end - begin);
         msg = str.substr(end + 2);
-        type = LogType::message;
+        type = LogType::text;
         return true;
     }
     bool parseJoin(const std::string& str, const std::size_t pos)
