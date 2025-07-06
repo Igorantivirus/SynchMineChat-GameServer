@@ -21,6 +21,9 @@ public:
     {
         ws_.set_option(websocket::stream_base::timeout::suggested(beast::role_type::client));
         ws_.auto_fragment(true);
+
+        pollCallSettings_.first = false;
+        pollCallSettings_.second = std::this_thread::get_id();
     }
     ~WebSocketClient()
     {
@@ -94,10 +97,11 @@ public:
             throw std::logic_error("It is forbidden to call \"poll\" from callback functions.");
 
         pollCallSettings_.first = true;
-        pollCallSettings_.second = std::this_thread::get_id();
 
         std::lock_guard lg(ioMut_);
         io_.poll();
+
+        pollCallSettings_.first = false;
     }
 
     void sendMessage(const std::string& msg)
