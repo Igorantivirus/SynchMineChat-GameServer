@@ -11,6 +11,31 @@ enum class LogType : unsigned char
     achievement
 };
 
+std::string toString(const LogType type)
+{
+    switch (type)
+    {
+        case LogType::message:      return "message";
+        case LogType::left:         return "left";
+        case LogType::join:         return "join";
+        case LogType::achievement:  return "achievement";
+        default:                    return "none"
+    };
+}
+
+LogType toLogType(const std::string& str)
+{
+    if(str == "message")
+        return LogType::message;
+    if(str == "left")
+        return LogType::left;
+    if(str == "join")
+        return LogType::join;
+    if(str == "achievement")
+        return LogType::achievement;
+    return LogType::none; 
+}
+
 struct LogMessage
 {
     LogType type = LogType::none;
@@ -37,7 +62,7 @@ public:
         if (pos = str.find("left the game"); pos != std::string::npos)
             return parseLeft(str, pos);
         return false;
-    }   
+    }
 
 private:
 
