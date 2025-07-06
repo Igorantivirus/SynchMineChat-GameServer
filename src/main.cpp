@@ -4,7 +4,7 @@ int main()
 {
     Service::staticConstruct("resources/MainConfig.json");
     
-    WebChatProcessor app;    
+    WebChatProcessor app;
     app.run();
 
     return 0;

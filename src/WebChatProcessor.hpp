@@ -75,9 +75,9 @@ private:
             client_.connect(Service::config.MINECRAFT_SERVER_IP, Service::config.SERVER_PORT, "/ws");
             std::this_thread::sleep_for(std::chrono::seconds(5));
             downtime += std::chrono::seconds(5);
-            if(downtime >= std::chrono::seconds(100))
+            if(downtime >= std::chrono::seconds(30))
             {
-                Service::log.log("The simple one is too long.", LogLevel::Critical);
+                Service::log.log("The downtime was too long.", LogLevel::Critical);
                 isWorking_ = false;
                 return;
             }
