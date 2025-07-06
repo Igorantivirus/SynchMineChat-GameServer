@@ -2,43 +2,43 @@
 
 #include "string"
 
-enum class LogType : unsigned char
-{
-    none = 0,
-    text,
-    left,
-    join,
-    achievement
-};
+#include "../MinecraftChat/SubUtility.hpp"
 
-std::string toString(const LogType type)
-{
-    switch (type)
-    {
-        case LogType::text:      return "text";
-        case LogType::left:         return "left";
-        case LogType::join:         return "join";
-        case LogType::achievement:  return "achievement";
-        default:                    return "none";
-    }
-}
-
-LogType toLogType(const std::string& str)
-{
-    if(str == "text")
-        return LogType::text;
-    if(str == "left")
-        return LogType::left;
-    if(str == "join")
-        return LogType::join;
-    if(str == "achievement")
-        return LogType::achievement;
-    return LogType::none; 
-}
+// enum class LogType : unsigned char
+// {
+//     none = 0,
+//     text,
+//     left,
+//     join,
+//     achievement
+// };
+// std::string toString(const LogType type)
+// {
+//     switch (type)
+//     {
+//         case LogType::text:         return "text";
+//         case LogType::left:         return "left";
+//         case LogType::join:         return "join";
+//         case LogType::achievement:  return "achievement";
+//         default:                    return "none";
+//     }
+// }
+// LogType toLogType(const std::string& str)
+// {
+//     if(str == "text")
+//         return LogType::text;
+//     if(str == "left")
+//         return LogType::left;
+//     if(str == "join")
+//         return LogType::join;
+//     if(str == "achievement")
+//         return LogType::achievement;
+//     return LogType::none; 
+// }
 
 struct LogMessage
 {
-    LogType type = LogType::none;
+    MessageType type = MessageType::none;
     std::string playerName;
     std::string msg;
 
@@ -46,7 +46,7 @@ public:
 
     void clear()
     {
-        type = LogType::none;
+        type = MessageType::none;
         playerName.clear();
         msg.clear();
     }
@@ -74,7 +74,7 @@ private:
         std::size_t end = str.find('>', pos);
         playerName = str.substr(begin, end - begin);
         msg = str.substr(end + 2);
-        type = LogType::text;
+        type = MessageType::text;
         return true;
     }
     bool parseJoin(const std::string& str, const std::size_t pos)
@@ -84,7 +84,7 @@ private:
         std::size_t end = pos - 1;
         playerName = str.substr(begin, end - begin);
         msg = "";
-        type = LogType::join;
+        type = MessageType::join;
         return true;
     }
     bool parseLeft(const std::string& str, const std::size_t pos)
@@ -94,7 +94,7 @@ private:
         std::size_t end = pos - 1;
         playerName = str.substr(begin, end - begin);
         msg = "";
-        type = LogType::left;
+        type = MessageType::left;
         return true;
     }
     bool parseAchievement(const std::string& str, const std::size_t pos)
@@ -107,7 +107,7 @@ private:
         begin = str.find('[', pos) + 1;
         end = str.find(']', begin);
         msg = str.substr(begin, end - begin);
-        type = LogType::achievement;
+        type = MessageType::achievement;
 
         return true;
     }
