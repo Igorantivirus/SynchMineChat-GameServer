@@ -102,6 +102,8 @@
     "thread": "cpp",
     "numeric": "cpp",
     "set": "cpp",
-    "valarray": "cpp"
+    "valarray": "cpp",
+    "regex": "cpp",
+    "stack": "cpp"
   }
 }

@@ -1,5 +1,6 @@
 #pragma once
 
+#include <utility>
 #include <string>
 #include <mutex>
 #include <atomic>
@@ -20,6 +21,9 @@ public:
     {
         ws_.set_option(websocket::stream_base::timeout::suggested(beast::role_type::client));
         ws_.auto_fragment(true);
+
+        pollCallSettings_.first = false;
+        pollCallSettings_.second = std::this_thread::get_id();
     }
     ~WebSocketClient()
     {
@@ -31,20 +35,23 @@ public:
         return events_;
     }
 
-    bool connect(const std::string &ip, const std::string &port, const std::string &servPath)
+    void setSettings(const std::string& ip, const std::string& port)
     {
-        std::lock_guard lg1(wsMut_);
-        std::lock_guard lg2(ioMut_);
+        if(pollCallSettings_.first && pollCallSettings_.second == std::this_thread::get_id())
+            throw std::logic_error("You cannot force a change of settings in the callback functions when \"poll\" is running.");
+        std::scoped_lock lock(stMut_, ioMut_);
+        settings_.ip = ip;
+        settings_.port = port;
+        settings_.results = tcp::resolver(io_).resolve(ip, port);
+    }
+
+    bool connect(const std::string &servPath)
+    {
         try
         {
-            auto const results = tcp::resolver(io_).resolve(ip, port);
-            net::connect(ws_.next_layer(), results);
-            ws_.handshake(ip, servPath);
-            isConnected_ = true;
-            readSetAsyncTask();
-            events_.onConnectF_();
-            Service::log.log("Sucsess connect to server!", LogLevel::Info);
-            return true;
+            std::scoped_lock lg(wsMut_, stMut_); 
+            net::connect(ws_.next_layer(), settings_.results);
+            ws_.handshake(settings_.ip, servPath);
         }
         catch (const beast::system_error &e)
         {
@@ -52,22 +59,29 @@ public:
             Service::log.log("Failed to connect to server!", LogLevel::Error);
             return false;
         }
+        isConnected_ = true;
+        readSetAsyncTask();
+        if(events_.onConnectF_)
+            events_.onConnectF_();
+        Service::log.log("Sucsess connect to server!", LogLevel::Info);
+        return true;
     }
 
     void disconnect(websocket::close_code code = websocket::close_code::normal)
     {
-        std::lock_guard lg1(wsMut_);
         if (!isConnected_)
-            return;
+        return;
+        isConnected_ = false;
         try
         {
+            std::lock_guard lg1(wsMut_);
             ws_.close(code);
         }
         catch (...)
         {}
-        events_.onCloseF_(code);
+        if(events_.onCloseF_)
+            events_.onCloseF_(code);
         Service::log.log("Disconnect from server!", LogLevel::Info);
-        isConnected_ = false;
     }
 
     bool isConnected() const
@@ -77,9 +91,17 @@ public:
 
     void poll()
     {
-        std::lock_guard lg1(ioMut_);
-        if(isConnected_)
-            io_.poll();
+        // if(!isConnected_)
+        //     return;
+        if(pollCallSettings_.first && pollCallSettings_.second == std::this_thread::get_id())
+            throw std::logic_error("It is forbidden to call \"poll\" from callback functions.");
+
+        pollCallSettings_.first = true;
+
+        std::lock_guard lg(ioMut_);
+        io_.poll();
+
+        pollCallSettings_.first = false;
     }
 
     void sendMessage(const std::string& msg)
@@ -87,7 +109,7 @@ public:
         std::lock_guard lg1(wsMut_);
         ws_.async_write(net::buffer(msg), [this](beast::error_code ec, std::size_t s){asyncWriteCallBack(ec, s);});
     }
-
+    
     void ping()
     {
         std::lock_guard lg1(wsMut_);
@@ -95,11 +117,27 @@ public:
     }
 
 private:
+
+    struct WebSocketSettings
+    {
+        std::string port;
+        std::string ip;
+        net::ip::basic_resolver_results<tcp> results; 
+    };
+
+private:
+
+    using SettingsT = std::pair<std::string, std::string>;
+
+    std::pair<std::atomic<bool>, std::thread::id> pollCallSettings_{};
+
     net::io_context io_;
     websocket::stream<tcp::socket> ws_;
-    
+    WebSocketSettings settings_;
+
     std::mutex ioMut_;
     std::mutex wsMut_;
+    std::mutex stMut_;
 
     std::atomic<bool> isConnected_ = false;
 
