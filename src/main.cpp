@@ -29,6 +29,8 @@ void onDisconnect(websocket::close_code)
 
 #include "Parser/Parser.hpp"
 
+#include "MinecraftChat/MinecraftChatAPI.hpp"
+
 int main()
 {
     Service::staticConstruct("resources/MainConfig.json");
