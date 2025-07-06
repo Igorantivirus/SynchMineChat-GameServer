@@ -15,6 +15,8 @@ public:
         client_.getEvents().onClose(std::bind(&WebChatProcessor::onDisconnect, this, std::placeholders::_1)); 
         client_.getEvents().onMessage(std::bind(&WebChatProcessor::onMessage, this, std::placeholders::_1));
         client_.getEvents().onConnect(std::bind(&WebChatProcessor::onConnect, this));
+
+        client_.setSettings(Service::config.SERVER_URL, Service::config.SERVER_PORT);
     }
     ~WebChatProcessor()
     {
@@ -25,7 +27,7 @@ public:
     //main thread
     void run()
     {
-        client_.connect(Service::config.MINECRAFT_SERVER_IP, Service::config.SERVER_PORT, "/ws");
+        client_.connect("/ws");
         if(!client_.isConnected())
             reconnectToServer();
         pollClientThPtr_ = std::make_unique<std::thread>(&WebChatProcessor::otherThreadToWebSpcketPoll, this);
@@ -72,7 +74,7 @@ private:
         while(!client_.isConnected())
         {
             Service::log.log("Try to reconnect to server with 5 seconds.", LogLevel::Error);
-            client_.connect(Service::config.MINECRAFT_SERVER_IP, Service::config.SERVER_PORT, "/ws");
+            client_.connect("/ws");
             std::this_thread::sleep_for(std::chrono::seconds(5));
             downtime += std::chrono::seconds(5);
             if(downtime >= std::chrono::seconds(30))
@@ -111,6 +113,7 @@ private:
         Service::log.log("Connect to server.", LogLevel::Info);
         nlohmann::json key;
         key["key"] = Service::config.SECRET_SERVER_PASSWORD;
+        Service::log.log("Json: " + key.dump(), LogLevel::Debug);
         client_.sendMessage(key.dump());
     }
 
