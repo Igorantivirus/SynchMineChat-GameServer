@@ -19,8 +19,8 @@ std::string toString(const LogType type)
         case LogType::left:         return "left";
         case LogType::join:         return "join";
         case LogType::achievement:  return "achievement";
-        default:                    return "none"
-    };
+        default:                    return "none";
+    }
 }
 
 LogType toLogType(const std::string& str)
