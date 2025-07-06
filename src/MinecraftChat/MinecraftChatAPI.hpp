@@ -20,6 +20,16 @@ public:
         onResponseF_ = std::bind(&MinecraftChatAPI::onResponse, this, std::placeholders::_1);
     }
 
+    bool isConnected() const
+    {
+        return rconClient_.connected;
+    }
+
+    void start()
+    {
+        rconClient_.start(true);
+    }
+
     void sendMessage(const Message& message)
     {
         std::lock_guard lg(rconMut_);
