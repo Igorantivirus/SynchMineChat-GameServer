@@ -19,8 +19,16 @@ struct LogMessage
 
 public:
 
+    void clear()
+    {
+        type = LogType::none;
+        playerName.clear();
+        msg.clear();
+    }
+
     bool parseFromString(const std::string& str)
     {
+        clear();
         std::size_t pos{};
         if (pos = str.find("[Not Secure]"); pos != std::string::npos)
             return parseMsg(str, pos);
@@ -62,4 +70,5 @@ private:
         type = LogType::left;
         return true;
     }
+
 };
