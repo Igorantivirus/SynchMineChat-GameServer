@@ -109,6 +109,7 @@ private:
     void onConnect()
     {
         Service::log.log("Connect to server.", LogLevel::Info);
+        client_.sendMessage(Service::config.SECRET_SERVER_PASSWORD);
     }
 
     // other thread
