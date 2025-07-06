@@ -33,7 +33,9 @@ public:
     void sendMessage(const Message& message)
     {
         std::lock_guard lg(rconMut_);
-        std::string text = '<' + message["userName"] + '>' + ' ' + message[text];
+        std::string text;
+        if(message.type == MessageType::text)
+            text = '<' + message["userName"] + '>' + ' ' + message[text];
         std::string command = "/tellraw @a [\"" + text + "\"]";
         rconClient_.send_data(command, 3, rconpp::data_type::SERVERDATA_EXECCOMMAND, onResponseF_);
     }
