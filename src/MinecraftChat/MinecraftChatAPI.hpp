@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <mutex>
 
 #include <rconpp/rcon.h>
 
@@ -21,6 +22,7 @@ public:
 
     void sendMessage(const Message& message)
     {
+        std::lock_guard lg(rconMut_);
         std::string text = '<' + message["userName"] + '>' + ' ' + message[text];
         std::string command = "/tellraw @a [\"" + text + "\"]";
         rconClient_.send_data(command, 3, rconpp::data_type::SERVERDATA_EXECCOMMAND, onResponseF_);
@@ -28,11 +30,15 @@ public:
 
     AsynchSafelyQueue<LogMessage>& getNextMessages()
     {
+        std::lock_guard lg(parsMut_);
         parser_.parse(messages_);
         return messages_;
     }
 
 private:
+
+    std::mutex parsMut_;
+    std::mutex rconMut_;
 
     MinecraftLogParser parser_;
     rconpp::rcon_client rconClient_;
