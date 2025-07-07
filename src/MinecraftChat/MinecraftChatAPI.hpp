@@ -91,8 +91,8 @@ private:
 
         StringUtils::replaceAll(text, "\n", "\\n");
 
-        std::string msg = '<' + userName + '>' + ' ' + text;
-        std::string command = "/tellraw @a [\"" + msg + "\"]";
+        std::string msg = '<' + userName + '>' + ' ' + text; 
+        std::string command = std::format(R"(/tellraw @a [{"text":"<{}>","color":"aqua"}," {}"])", userName, text);
         rconClient_.send_data(command, 3, rconpp::data_type::SERVERDATA_EXECCOMMAND, onResponseF_);   
     } 
 
