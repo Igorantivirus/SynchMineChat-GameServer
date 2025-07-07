@@ -38,6 +38,7 @@ public:
             while(!messanges.empty())
                 sendMessageToServer(messanges.pop());
             client_.poll();
+            std::this_thread::sleep_for(std::chrono::milliseconds(50));
         }
     }
 
