@@ -86,10 +86,14 @@ private:
     {
         std::lock_guard lg(rconMut_);
 
-        std::string userName = '<' + message["userName"] + '>' + ' ';
-        auto messages = StringUtils::split(message["text"], '\n');
-        for(const auto& txt : messages)
-            rconClient_.send_data("/tellraw @a [\"" + userName + txt + "\"]", 3, rconpp::data_type::SERVERDATA_EXECCOMMAND, onResponseF_);
+        std::string text = message["userName"];
+        std::string userName = message["userName"];
+
+        StringUtils::replaceAll(text, "\n", "\\n");
+
+        std::string msg = '<' + userName + '>' + ' ' + text;
+        std::string command = "/tellraw @a [\"" + msg + "\"]";
+        rconClient_.send_data(command, 3, rconpp::data_type::SERVERDATA_EXECCOMMAND, onResponseF_);   
     } 
 
 };
