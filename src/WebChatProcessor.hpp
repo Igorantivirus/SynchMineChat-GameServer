@@ -146,6 +146,7 @@ private:
     // other thread
     void onMessage(const std::string& str)
     {
+        Service::log.log("On message: " + str, LogLevel::Debug);
         try
         {
             Message realMes;
