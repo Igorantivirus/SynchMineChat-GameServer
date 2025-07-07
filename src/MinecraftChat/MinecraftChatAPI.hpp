@@ -5,6 +5,7 @@
 
 #include <rconpp/rcon.h>
 
+#include "../StringUtils.hpp"
 #include "../Services/Service.hpp"
 #include "../AsynchContainers/AsynchQueue.hpp"
 #include "../Parser/Parser.hpp"
@@ -44,12 +45,8 @@ public:
 
     void sendMessage(const Message& message)
     {
-        std::lock_guard lg(rconMut_);
-        std::string text;
         if(message.type == MessageType::text)
-            text = '<' + message["userName"] + '>' + ' ' + message["text"];
-        std::string command = "/tellraw @a [\"" + text + "\"]";
-        rconClient_.send_data(command, 3, rconpp::data_type::SERVERDATA_EXECCOMMAND, onResponseF_);
+            sendText(message);
     }
 
     AsynchSafelyQueue<LogMessage>& getNextMessages()
@@ -82,5 +79,17 @@ private:
     {
         Service::log.log("Response on RCON send message: " + response.data, LogLevel::Info);
     }
+
+private:
+
+    void sendText(const Message& message)
+    {
+        std::lock_guard lg(rconMut_);
+
+        std::string userName = '<' + message["userName"] + '>' + ' ';
+        auto messages = StringUtils::split(message["text"], '\n');
+        for(const auto& txt : messages)
+            rconClient_.send_data("/tellraw @a [\"" + userName + txt + "\"]", 3, rconpp::data_type::SERVERDATA_EXECCOMMAND, onResponseF_);
+    } 
 
 };
