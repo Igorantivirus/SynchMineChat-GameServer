@@ -55,19 +55,19 @@ private:
 
     void connectaAll()
     {
-        Service::log.log("Try to connect to server.", LogLevel::Error);
+        Service::log.log("Try to connect to server.", LogLevel::Info);
         client_.connect("/ws");
         if(!client_.isConnected())
             reconnectToServer();
         else
-            Service::log.log("Sucsessful connect to server.", LogLevel::Error);
+            Service::log.log("Sucsessful connect to server.", LogLevel::Info);
 
-        Service::log.log("Try to connect to rcon.", LogLevel::Error);
+        Service::log.log("Try to connect to rcon.", LogLevel::Info);
         chat_.start();
         if(!chat_.isConnected())
             reconnectToRcon();
         else
-            Service::log.log("Sucsessful connect to rcon.", LogLevel::Error);
+            Service::log.log("Sucsessful connect to rcon.", LogLevel::Info);
     }
 
     // other thread
@@ -83,7 +83,7 @@ private:
     // other thread
     void reconnectToServer()
     {
-        if(client_.isConnected())
+        if(client_.isConnected() && isWorking_)
             return;
         Service::log.log("Server connect fatal.", LogLevel::Error);
         std::chrono::seconds downtime = std::chrono::seconds(0);
@@ -91,7 +91,7 @@ private:
         {
             std::this_thread::sleep_for(std::chrono::seconds(5));
             downtime += std::chrono::seconds(5);
-            if(downtime >= std::chrono::seconds(30))
+            if(downtime >= std::chrono::seconds(50))
             {
                 Service::log.log("The downtime was too long.", LogLevel::Critical);
                 isWorking_ = false;
@@ -104,7 +104,7 @@ private:
 
     void reconnectToRcon()
     {
-        if(chat_.isConnected())
+        if(chat_.isConnected() && isWorking_)
             return;
         Service::log.log("Rcon connect fatal.", LogLevel::Error);
         std::chrono::seconds downtime = std::chrono::seconds(0);
@@ -112,7 +112,7 @@ private:
         {
             std::this_thread::sleep_for(std::chrono::seconds(5));
             downtime += std::chrono::seconds(5);
-            if(downtime >= std::chrono::seconds(30))
+            if(downtime >= std::chrono::seconds(50))
             {
                 Service::log.log("The downtime was too long.", LogLevel::Critical);
                 isWorking_ = false;
