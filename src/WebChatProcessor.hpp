@@ -143,13 +143,13 @@ private:
     }
 
     // other thread
-    void onMessage(const std::string& msg)
+    void onMessage(const std::string& str)
     {
         try
         {
-            Message msg;
-            msg.fromJson(nlohmann::json(msg));
-            chat_.sendMessage(msg);
+            Message realMes;
+            realMes.fromJson(toJson(str));
+            chat_.sendMessage(realMes);
         }
         catch(...)
         {
@@ -159,6 +159,18 @@ private:
 
 private:
     
+    static nlohmann::json toJson(const std::string& str)
+    {
+        try
+        {
+            return nlohmann::json::parse(str);
+        }
+        catch(...)
+        {
+            return nlohmann::json{};
+        }
+    }
+
     //main thread
     void sendMessageToServer(const LogMessage& msg)
     {        
