@@ -132,7 +132,6 @@ private:
         Service::log.log("Connect to server.", LogLevel::Info);
         nlohmann::json key;
         key["key"] = Service::config.SECRET_SERVER_PASSWORD;
-        Service::log.log("Json: " + key.dump(), LogLevel::Debug);
         client_.sendMessage(key.dump());
     }
 
@@ -146,7 +145,6 @@ private:
     // other thread
     void onMessage(const std::string& str)
     {
-        Service::log.log("On message: " + str, LogLevel::Debug);
         try
         {
             Message realMes;

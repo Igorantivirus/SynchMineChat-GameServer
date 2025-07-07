@@ -167,7 +167,6 @@ private:
     {
         std::string messageFromServer = beast::buffers_to_string(readBuffer.data());
         readBuffer.clear();
-        Service::log.log("Buffer cleared. New size: " + std::to_string(readBuffer.size()) + ". Text: " + messageFromServer, LogLevel::Debug);
         if (!ec)
         {
             events_.onMessageF_(messageFromServer);
@@ -175,9 +174,7 @@ private:
                 readSetAsyncTask();  // Следующий цикл чтения
         }
         else
-            disconnect(websocket::close_code::internal_error);//Просто закроем соединение
-        // readBuffer.consume(readBuffer.size()); // Очищаем буфер
-        
+            disconnect(websocket::close_code::internal_error);
     }
 
 };
