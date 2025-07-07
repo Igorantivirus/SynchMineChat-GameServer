@@ -27,23 +27,17 @@ public:
     //main thread
     void run()
     {
-        client_.connect("/ws");
-        if(!client_.isConnected())
-            reconnectToServer();
-        pollClientThPtr_ = std::make_unique<std::thread>(&WebChatProcessor::otherThreadToWebSpcketPoll, this);
-
-        chat_.start();
+        connectaAll();
+        // pollClientThPtr_ = std::make_unique<std::thread>(&WebChatProcessor::otherThreadToWebSpcketPoll, this);
 
         while(isWorking_)
         {
-            if(!chat_.isConnected())
-            {
-                Service::log.log("Connect to rcon is failed. ", LogLevel::Error);
-                reconnectRcon();
-            }
+            reconnectToServer();
+            reconnectToRcon();
             auto& messanges = chat_.getNextMessages();
             while(!messanges.empty())
                 sendMessageToServer(messanges.pop());
+            client_.poll();
         }
     }
 
@@ -59,6 +53,23 @@ private:
 
 private:
 
+    void connectaAll()
+    {
+        Service::log.log("Try to connect to server.", LogLevel::Error);
+        client_.connect("/ws");
+        if(!client_.isConnected())
+            reconnectToServer();
+        else
+            Service::log.log("Sucsessful connect to server.", LogLevel::Error);
+
+        Service::log.log("Try to connect to rcon.", LogLevel::Error);
+        chat_.start();
+        if(!chat_.isConnected())
+            reconnectToRcon();
+        else
+            Service::log.log("Sucsessful connect to rcon.", LogLevel::Error);
+    }
+
     // other thread
     void otherThreadToWebSpcketPoll()
     {
@@ -72,11 +83,12 @@ private:
     // other thread
     void reconnectToServer()
     {
+        if(client_.isConnected())
+            return;
+        Service::log.log("Server connect fatal.", LogLevel::Error);
         std::chrono::seconds downtime = std::chrono::seconds(0);
         while(!client_.isConnected())
         {
-            Service::log.log("Try to reconnect to server with 5 seconds.", LogLevel::Error);
-            client_.connect("/ws");
             std::this_thread::sleep_for(std::chrono::seconds(5));
             downtime += std::chrono::seconds(5);
             if(downtime >= std::chrono::seconds(30))
@@ -85,25 +97,29 @@ private:
                 isWorking_ = false;
                 return;
             }
+            Service::log.log("Try to reconnect to server with 5 seconds.", LogLevel::Error);
+            client_.connect("/ws");
         }
     }
 
-    //this thread
-    void reconnectRcon()
+    void reconnectToRcon()
     {
+        if(chat_.isConnected())
+            return;
+        Service::log.log("Rcon connect fatal.", LogLevel::Error);
         std::chrono::seconds downtime = std::chrono::seconds(0);
         while(!chat_.isConnected())
         {
-            Service::log.log("Try to reconnect to rcon with 5 seconds.", LogLevel::Error);
-            chat_.start();
             std::this_thread::sleep_for(std::chrono::seconds(5));
             downtime += std::chrono::seconds(5);
-            if(downtime >= std::chrono::seconds(100))
+            if(downtime >= std::chrono::seconds(30))
             {
-                Service::log.log("The simple one is too long", LogLevel::Critical);
+                Service::log.log("The downtime was too long.", LogLevel::Critical);
                 isWorking_ = false;
                 return;
             }
+            Service::log.log("Try to reconnect to server with 5 seconds.", LogLevel::Error);
+            chat_.start();
         }
     }
 
