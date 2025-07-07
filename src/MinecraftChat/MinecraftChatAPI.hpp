@@ -92,7 +92,7 @@ private:
         StringUtils::replaceAll(text, "\n", "\\n");
 
         std::string msg = '<' + userName + '>' + ' ' + text;
-        std::string command = R"(/tellraw @a [{"text":"<)" + userName + R"(>","color":"aqua"}," )" + text + R"("]))";
+        std::string command = R"(/tellraw @a [{"text":"<)" + userName + R"(>","color":"aqua"}," )" + text + R"("])";
         rconClient_.send_data(command, 3, rconpp::data_type::SERVERDATA_EXECCOMMAND, onResponseF_);   
     } 
 
