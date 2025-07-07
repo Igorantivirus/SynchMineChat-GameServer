@@ -86,7 +86,7 @@ private:
     {
         std::lock_guard lg(rconMut_);
 
-        std::string text = message["userName"];
+        std::string text = message["text"];
         std::string userName = message["userName"];
 
         StringUtils::replaceAll(text, "\n", "\\n");
