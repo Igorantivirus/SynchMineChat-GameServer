@@ -74,7 +74,10 @@ public:
         std::string resultMessage = time + ' ' + strName + ' ' + message + '\n';
 
         if (logFile_.is_open())
+        {
             logFile_ << resultMessage;
+            logFile_.flush();
+        }
         if (writeToConsole_)
         {
             setColor(color);
