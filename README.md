@@ -46,3 +46,24 @@ Libraries:
    git clone https://github.com/Igorantivirus/SynchMineChat-GameServer
    cd SynchMineChat-GameServer
    ```
+2. **Build with CMake**
+   ```sh
+   cmake -B build -DCMAKE_BUILD_TYPE=Release
+   ```
+3. **Build the project** 
+   ```sh
+   cmake --build build --config Release
+   ```
+
+### ЗRun
+
+1. Create config file with name *MainConfig.json* (structure of file you can find in the  *src/Services/MainConfog.hpp* file)
+   Place file to *build/resources/*
+2. cd to build path and run program
+   ```sh
+   ./main
+   ``` 
+
+## License
+The MIT License
+
