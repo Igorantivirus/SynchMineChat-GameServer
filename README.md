@@ -55,9 +55,9 @@ Libraries:
    cmake --build build --config Release
    ```
 
-### ЗRun
+### Run
 
-1. Create config file with name *MainConfig.json* (structure of file you can find in the  *src/Services/MainConfog.hpp* file)
+1. Create config file with name *MainConfig.json* (structure of file you can find in the *src/Services/MainConfog.hpp* file)
    Place file to *build/resources/*
 2. cd to build path and run program
    ```sh
