@@ -13,10 +13,7 @@ public:
 
     std::string baseMessage(const std::string& playerName, const std::string& messangeText) const
     {
-        std::string text = messangeText;
-
-        StringUtils::replaceAll(text, "\n", "\\n");
-        StringUtils::replaceAll(text, "\t", " ");
+        std::string text = preprocess(messangeText);
 
         std::vector<nlohmann::json> params;
         params.push_back(getBaseText('<' + playerName + '>' + ' ', "aqua"));
@@ -32,6 +29,48 @@ public:
     
 
 private:
+
+    std::string preprocess(const std::string& str) const
+    {
+        constexpr static const char symbols[] = "[]{}\n\t\"\'";
+        constexpr static const std::size_t size = sizeof(symbols) / sizeof(char);
+
+        std::string res;
+        res.reserve(str.size());
+        bool replaced = false;
+        for(const auto& c : str)
+        {
+            replaced = false;
+            for(const auto& specC : symbols)
+                if(specC == c)
+                {
+                    replaced = true;
+                    res += '\\' + c;
+                    break;
+                }
+            if(!replaced)
+                res += c;
+        }
+        return res;
+    }
+
+    void preprocessString(std::string& str)
+    {
+        //Скбоки
+        StringUtils::replaceAll(str, "[", "\\[");
+        StringUtils::replaceAll(str, "]", "\\]");
+        StringUtils::replaceAll(str, "{", "\\{");
+        StringUtils::replaceAll(str, "}", "\\}");
+        //Спец символы
+        StringUtils::replaceAll(str, "\n", "\\n");
+        StringUtils::replaceAll(str, "\t", " ");
+        //Ковычки
+        StringUtils::replaceAll(str, "\"", "\\\"");
+        StringUtils::replaceAll(str, "\'", "\\\'");
+    }
+
+
+
 
     nlohmann::json getBaseText(const std::string_view text, const std::string& color = "white") const
     {
