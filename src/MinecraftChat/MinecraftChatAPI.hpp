@@ -5,11 +5,11 @@
 
 #include <rconpp/rcon.h>
 
-#include "../StringUtils.hpp"
 #include "../Services/Service.hpp"
 #include "../AsynchContainers/AsynchQueue.hpp"
 #include "../Parser/Parser.hpp"
 #include "Messange.hpp"
+#include "TellrawGenerator.hpp"
 
 class MinecraftChatAPI
 {
@@ -66,6 +66,8 @@ private:
 
     AsynchSafelyQueue<LogMessage> messages_;
 
+    TellrawGenerator generator_;
+
 private:
     
     std::function<void(const rconpp::response&)> onResponseF_;
@@ -86,14 +88,7 @@ private:
     {
         std::lock_guard lg(rconMut_);
 
-        std::string text = message["text"];
-        std::string userName = message["userName"];
-
-        StringUtils::replaceAll(text, "\n", "\\n");
-
-        std::string msg = '<' + userName + '>' + ' ' + text;
-        std::string command = R"(/tellraw @a [{"text":"<)" + userName + R"(>","color":"aqua"}," ",{"text":")" + text + R"(","color":"white"}])";
-        //   /tellraw @a [{"text":"<Name>","color":"aqua"}," ",{"text":"txt","color":"white"}]
+        std::string command = generator_.baseMessage(message["userName"], message["text"]);
         rconClient_.send_data(command, 3, rconpp::data_type::SERVERDATA_EXECCOMMAND, onResponseF_);   
     } 
 
