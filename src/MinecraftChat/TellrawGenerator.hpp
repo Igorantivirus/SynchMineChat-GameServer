@@ -111,6 +111,7 @@ private:
             }
             params.push_back(getLink(str.substr(lastPos, ind - lastPos)));
         }
+        params.push_back(getBaseText(str.substr(lastPos)));
     }
 
 
