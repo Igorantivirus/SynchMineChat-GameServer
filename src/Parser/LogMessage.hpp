@@ -64,6 +64,7 @@ public:
         if (pos = str.find("has made the advancement"); pos != std::string::npos)
             return parseAchievement(str, pos);
         return false;
+        //[16Jul2025 20:37:50.118] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: Igorantivirus has reached the goal [Р’РѕР·РґСѓС€РЅРѕРµ РјРіРЅРѕРјРµРЅРёРµ...]
     }
 
 private:

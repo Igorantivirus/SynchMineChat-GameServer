@@ -50,17 +50,11 @@ private:
         }
         std::streamsize fileSize = getFileSize(logFile);
         std::streamsize lastSize = getLastPos();
-        std::cout << fileSize << ' ' << lastSize << '\n';
+        
         if(lastSize < fileSize)
-        {
-            std::cout << "go to center\n";
             logFile.seekg(lastSize, std::ios_base::beg);
-        }
         else
-        {
-            std::cout << "got to end\n";
             logFile.seekg(fileSize, std::ios_base::beg);
-        }
 
         outLastPosFile(fileSize);
     }
