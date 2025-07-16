@@ -48,18 +48,15 @@ private:
             Service::log.log("Unable to open log file: " + Service::config.MINECRAFT_LOG_FILE, LogLevel::Error);
             return;
         }
-        logFile.ignore((std::numeric_limits<std::streamsize>::max)());
-        std::streamsize fileSize = logFile.gcount();
-        logFile.clear();
-
+        std::streamsize fileSize = getFileSize(logFile);
         std::streamsize lastSize = getLastPos();
 
         if(lastSize < fileSize)
-        {
             logFile.seekg(lastSize, std::ios_base::beg);
-            outLastPosFile(fileSize);
-        }
+        else
+            logFile.seekg(fileSize, std::ios_base::beg);
 
+        outLastPosFile(fileSize);
     }
 
     void checkLastPosFile()
@@ -77,14 +74,23 @@ private:
         out << pos;
         out.close();
     }
+    
     std::streamsize getLastPos()
     {
         std::ifstream in{Service::config.LAST_POS_FILE};
-
+        if(!in.is_open())
+            return (std::numeric_limits<std::streamsize>::max)();
         std::streamsize res;
         in >> res;
         in.close();
         return res;
+    }
+    std::streamsize getFileSize(std::ifstream& logFile)
+    {
+        logFile.ignore((std::numeric_limits<std::streamsize>::max)());
+        std::streamsize fileSize = logFile.gcount();
+        logFile.clear();
+        return fileSize;
     }
 
     //Код Коли, оставил, чтоб не потерять
