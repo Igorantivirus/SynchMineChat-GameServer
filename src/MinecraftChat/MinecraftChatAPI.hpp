@@ -47,6 +47,8 @@ public:
     {
         if(message.type == MessageType::text)
             sendText(message);
+        else if(message.type == MessageType::media)
+            sendMedia(message);
     }
 
     AsynchSafelyQueue<LogMessage>& getNextMessages()
@@ -90,6 +92,13 @@ private:
 
         std::string command = generator_.baseMessage(message["userName"], message["text"]);
         rconClient_.send_data(command, 3, rconpp::data_type::SERVERDATA_EXECCOMMAND, onResponseF_);   
-    } 
+    }
+    void sendMedia(const Message& message)
+    {
+        std::lock_guard lg(rconMut_);
+
+        std::string command = generator_.mediaMessage(message["userName"]);
+        rconClient_.send_data(command, 3, rconpp::data_type::SERVERDATA_EXECCOMMAND, onResponseF_);   
+    }
 
 };
