@@ -49,6 +49,8 @@ public:
             sendText(message);
         else if(message.type == MessageType::media)
             sendMedia(message);
+        else if(message.type == MessageType::audio)
+            sendAudio(message);
     }
 
     AsynchSafelyQueue<LogMessage>& getNextMessages()
