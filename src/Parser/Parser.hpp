@@ -16,7 +16,8 @@ class MinecraftLogParser
 public:
     MinecraftLogParser()
     {
-        checkLastPosFile();
+        outLastPosFile((std::numeric_limits<std::streamsize>::max)());
+        // checkLastPosFile();
     }
 
     void parse(AsynchSafelyQueue<LogMessage> &queue)
@@ -59,14 +60,14 @@ private:
         outLastPosFile(fileSize);
     }
 
-    void checkLastPosFile()
-    {
-        if(std::filesystem::exists(Service::config.LAST_POS_FILE))
-            return;
-        std::ofstream out(Service::config.LAST_POS_FILE);
-        out << std::streamsize(0);
-        out.close();
-    }
+    // void checkLastPosFile()
+    // {
+    //     if(std::filesystem::exists(Service::config.LAST_POS_FILE))
+    //         return;
+    //     std::ofstream out(Service::config.LAST_POS_FILE);
+    //     out << std::streamsize(0);
+    //     out.close();
+    // }
     
     void outLastPosFile(const std::streamsize pos)
     {
