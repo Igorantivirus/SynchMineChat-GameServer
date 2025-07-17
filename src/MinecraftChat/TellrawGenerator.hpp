@@ -11,6 +11,16 @@ class TellrawGenerator
 {
 public:
 
+    std::string paramsToTellraw(const std::vector<nlohmann::json>& params) const
+    {
+        std::string res = "/tellraw @a [";
+        for(const auto& i : params)
+            res += i.dump() + ',';
+        res.pop_back();
+        res += ']';
+        return res;
+    }
+
     std::string baseMessage(const std::string& playerName, const std::string& messangeText) const
     {
         std::string text = preprocess(messangeText);
@@ -19,12 +29,16 @@ public:
         params.push_back(getBaseText('<' + playerName + '>' + ' ', "aqua"));
         fillUrls(params, messangeText);
 
-        std::string res = "/tellraw @a [";
-        for(const auto& i : params)
-            res += i.dump() + ',';
-        res.pop_back();
-        res += ']';
-        return res;
+        return paramsToTellraw(params);
+    }
+
+    std::string mediaMessage(const std::string& playerName)
+    {
+        std::vector<nlohmann::json> params;
+        params.push_back(getBaseText('<' + playerName + '>' + ' ', "aqua"));
+        params.push_back(getBaseText("media file", "blue"));
+
+        return paramsToTellraw(params);
     }
     
 
@@ -68,8 +82,6 @@ private:
         StringUtils::replaceAll(str, "\"", "\\\"");
         StringUtils::replaceAll(str, "\'", "\\\'");
     }
-
-
 
 
     nlohmann::json getBaseText(const std::string_view text, const std::string& color = "white") const
