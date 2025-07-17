@@ -131,6 +131,8 @@ private:
                 lastPos = ind;
                 ind = (std::min)(str.find(' ', ind), str.size());
             }
+            if(ind == 0)
+                ind = (std::min)(str.find(' ', ind), str.size());
             params.push_back(getLink(str.substr(lastPos, ind - lastPos)));
         }
         params.push_back(getBaseText(str.substr(lastPos)));
