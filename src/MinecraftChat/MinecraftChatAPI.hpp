@@ -100,5 +100,12 @@ private:
         std::string command = generator_.mediaMessage(message["userName"]);
         rconClient_.send_data(command, 3, rconpp::data_type::SERVERDATA_EXECCOMMAND, onResponseF_);   
     }
+    void sendAudio(const Message& message)
+    {
+        std::lock_guard lg(rconMut_);
+
+        std::string command = generator_.audioMessage(message["userName"]);
+        rconClient_.send_data(command, 3, rconpp::data_type::SERVERDATA_EXECCOMMAND, onResponseF_);   
+    }
 
 };

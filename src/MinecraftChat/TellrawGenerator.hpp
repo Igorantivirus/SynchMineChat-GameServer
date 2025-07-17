@@ -40,6 +40,16 @@ public:
 
         return paramsToTellraw(params);
     }
+
+    std::string audioMessage(const std::string& playerName)
+    {
+        //TODO
+        std::vector<nlohmann::json> params;
+        params.push_back(getBaseText('<' + playerName + '>' + ' ', "aqua"));
+        params.push_back(getBaseText("audio message", "blue"));
+
+        return paramsToTellraw(params);
+    }
     
 
 private:
