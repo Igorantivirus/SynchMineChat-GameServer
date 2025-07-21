@@ -27,7 +27,10 @@ public:
             reconnectToRcon();
             auto& messanges = chat_.getNextMessages();
             while(!messanges.empty())
-                sendMessageToServer(messanges.back());
+            {
+                sendMessageToServer(messanges.front());
+                messanges.pop();
+            }
             client_.poll();
             std::this_thread::sleep_for(std::chrono::milliseconds(64));
         }
