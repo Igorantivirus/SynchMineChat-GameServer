@@ -39,7 +39,6 @@ public:
     {
         if(pollCallSettings_.first && pollCallSettings_.second == std::this_thread::get_id())
             throw std::logic_error("You cannot force a change of settings in the callback functions when \"poll\" is running.");
-        std::scoped_lock lock(stMut_, ioMut_);
         settings_.ip = ip;
         settings_.port = port;
         settings_.results = tcp::resolver(io_).resolve(ip, port);
@@ -49,7 +48,6 @@ public:
     {
         try
         {
-            std::scoped_lock lg(wsMut_, stMut_); 
             net::connect(ws_.next_layer(), settings_.results);
             ws_.handshake(settings_.ip, servPath);
         }
@@ -74,7 +72,6 @@ public:
         isConnected_ = false;
         try
         {
-            std::lock_guard lg1(wsMut_);
             ws_.close(code);
         }
         catch (...)
@@ -98,7 +95,6 @@ public:
 
         pollCallSettings_.first = true;
 
-        std::lock_guard lg(ioMut_);
         io_.poll();
 
         pollCallSettings_.first = false;
@@ -106,13 +102,11 @@ public:
 
     void sendMessage(const std::string& msg)
     {
-        std::lock_guard lg1(wsMut_);
         ws_.async_write(net::buffer(msg), [this](beast::error_code ec, std::size_t s){asyncWriteCallBack(ec, s);});
     }
     
     void ping()
     {
-        std::lock_guard lg1(wsMut_);
         ws_.async_ping("", [this](beast::error_code ec) {asyncPingCallBack(ec);});
     }
 
@@ -134,10 +128,6 @@ private:
     net::io_context io_;
     websocket::stream<tcp::socket> ws_;
     WebSocketSettings settings_;
-
-    std::mutex ioMut_;
-    std::mutex wsMut_;
-    std::mutex stMut_;
 
     std::atomic<bool> isConnected_ = false;
 

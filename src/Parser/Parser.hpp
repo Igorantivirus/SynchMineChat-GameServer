@@ -4,10 +4,9 @@
 #include <fstream>
 #include <filesystem>
 #include <limits>
+#include <queue>
 
 #include "../Services/Service.hpp"
-
-#include "../AsynchContainers/AsynchQueue.hpp"
 
 #include "LogMessage.hpp"
 
@@ -20,7 +19,7 @@ public:
         // checkLastPosFile();
     }
 
-    void parse(AsynchSafelyQueue<LogMessage> &queue)
+    void parse(std::queue<LogMessage> &queue)
     {
         std::ifstream logFile;
         openLogFile(logFile);

@@ -2,11 +2,11 @@
 
 #include <string>
 #include <mutex>
+#include <queue>
 
 #include <rconpp/rcon.h>
 
 #include "../Services/Service.hpp"
-#include "../AsynchContainers/AsynchQueue.hpp"
 #include "../Parser/Parser.hpp"
 #include "Messange.hpp"
 #include "TellrawGenerator.hpp"
@@ -53,22 +53,18 @@ public:
             sendAudio(message);
     }
 
-    AsynchSafelyQueue<LogMessage>& getNextMessages()
+    std::queue<LogMessage>& getNextMessages()
     {
-        std::lock_guard lg(parsMut_);
         parser_.parse(messages_);
         return messages_;
     }
 
 private:
 
-    std::mutex parsMut_;
-    std::mutex rconMut_;
-
     MinecraftLogParser parser_;
     rconpp::rcon_client rconClient_;
 
-    AsynchSafelyQueue<LogMessage> messages_;
+    std::queue<LogMessage> messages_;
 
     TellrawGenerator generator_;
 
@@ -90,22 +86,16 @@ private:
 
     void sendText(const Message& message)
     {
-        std::lock_guard lg(rconMut_);
-
         std::string command = generator_.baseMessage(message["userName"], message["text"]);
         rconClient_.send_data(command, 3, rconpp::data_type::SERVERDATA_EXECCOMMAND, onResponseF_);   
     }
     void sendMedia(const Message& message)
     {
-        std::lock_guard lg(rconMut_);
-
         std::string command = generator_.mediaMessage(message["userName"]);
         rconClient_.send_data(command, 3, rconpp::data_type::SERVERDATA_EXECCOMMAND, onResponseF_);   
     }
     void sendAudio(const Message& message)
     {
-        std::lock_guard lg(rconMut_);
-
         std::string command = generator_.audioMessage(message["userName"]);
         rconClient_.send_data(command, 3, rconpp::data_type::SERVERDATA_EXECCOMMAND, onResponseF_);   
     }

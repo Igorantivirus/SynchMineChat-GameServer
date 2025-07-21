@@ -37,36 +37,29 @@ public:
     }
     void setEntryToConsole(const bool writeToConsole)
     {
-        std::lock_guard<std::mutex> lg(mut_);
         writeToConsole_ = writeToConsole;
     }
 
     void closeFile()
     {
         log("---  Log session ended  ---", LogLevel::Info);
-        std::lock_guard<std::mutex> lg(mut_);
         logFile_.close();
     }
     bool openFile(const std::string &fileName)
     {
         if (isOpen())
             closeFile();
-        mut_.lock();
         logFile_.open(fileName, std::ios::app);
-        mut_.unlock();
         log("--- Log session started ---", LogLevel::Info);
         return logFile_.is_open();
     }
     bool isOpen() const
     {
-        std::lock_guard<std::mutex> lg(mut_);
         return logFile_.is_open();
     }
 
     void log(std::string message, LogLevel level)
     {
-        std::lock_guard<std::mutex> lg(mut_);
-
         std::string time = getCurentTime();
 
         const auto [strName, color] = toString(level);
@@ -89,7 +82,6 @@ public:
 private:
 
     std::ofstream logFile_;
-    mutable std::mutex mut_;
     bool writeToConsole_ = false;
 
 private:
