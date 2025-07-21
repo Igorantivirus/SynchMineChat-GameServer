@@ -22,8 +22,7 @@ public:
         ws_.set_option(websocket::stream_base::timeout::suggested(beast::role_type::client));
         ws_.auto_fragment(true);
 
-        pollCallSettings_.first = false;
-        // pollCallSettings_.second = std::this_thread::get_id();
+        isPolling_ = false;
     }
     ~WebSocketClient()
     {
@@ -37,10 +36,8 @@ public:
 
     void setSettings(const std::string& ip, const std::string& port)
     {
-        if(pollCallSettings_.first)
+        if(isPolling_)
             throw std::logic_error("You cannot force a change of settings in the callback functions when \"poll\" is running.");
-        // if(pollCallSettings_.first && pollCallSettings_.second == std::this_thread::get_id())
-        //     throw std::logic_error("You cannot force a change of settings in the callback functions when \"poll\" is running.");
         settings_.ip = ip;
         settings_.port = port;
         settings_.results = tcp::resolver(io_).resolve(ip, port);
@@ -90,19 +87,11 @@ public:
 
     void poll()
     {
-        // if(!isConnected_)
-        //     return;
-        // if(pollCallSettings_.first && pollCallSettings_.second == std::this_thread::get_id())
-        //     throw std::logic_error("It is forbidden to call \"poll\" from callback functions.");
-
-        if(pollCallSettings_.first)
+        if(isPolling_)
             throw std::logic_error("It is forbidden to call \"poll\" from callback functions.");
-
-        pollCallSettings_.first = true;
-
+        isPolling_ = true;
         io_.poll();
-
-        pollCallSettings_.first = false;
+        isPolling_ = false;
     }
 
     void sendMessage(const std::string& msg)
@@ -128,7 +117,7 @@ private:
 
     using SettingsT = std::pair<std::string, std::string>;
 
-    std::pair<bool, std::thread::id> pollCallSettings_{};
+    bool isPolling_ = false;
 
     net::io_context io_;
     websocket::stream<tcp::socket> ws_;
