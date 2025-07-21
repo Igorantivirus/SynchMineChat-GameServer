@@ -36,7 +36,7 @@ public:
             reconnectToRcon();
             auto& messanges = chat_.getNextMessages();
             while(!messanges.empty())
-                sendMessageToServer(messanges.pop());
+                sendMessageToServer(messanges.back());
             client_.poll();
             std::this_thread::sleep_for(std::chrono::milliseconds(64));
         }
@@ -44,11 +44,10 @@ public:
 
 private:
 
-    //Защищены мьютексом внутри
     MinecraftChatAPI chat_; 
     WebSocketClient client_;
 
-    std::atomic<bool> isWorking_ = true;
+    bool isWorking_ = true;
 
     std::unique_ptr<std::thread> pollClientThPtr_ = nullptr;
 

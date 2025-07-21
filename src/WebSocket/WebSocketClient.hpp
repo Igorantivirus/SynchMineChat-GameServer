@@ -128,13 +128,13 @@ private:
 
     using SettingsT = std::pair<std::string, std::string>;
 
-    std::pair<std::atomic<bool>, std::thread::id> pollCallSettings_{};
+    std::pair<bool, std::thread::id> pollCallSettings_{};
 
     net::io_context io_;
     websocket::stream<tcp::socket> ws_;
     WebSocketSettings settings_;
 
-    std::atomic<bool> isConnected_ = false;
+    bool isConnected_ = false;
 
     beast::flat_buffer readBuffer;
     WebSocketEvents events_;
