@@ -1,7 +1,5 @@
 #pragma once
 
-#include <thread>
-
 #include "Parser/LogMessage.hpp"
 
 #include "MinecraftChat/MinecraftChatAPI.hpp"
@@ -18,17 +16,10 @@ public:
 
         client_.setSettings(Service::config.SERVER_URL, Service::config.SERVER_PORT);
     }
-    ~WebChatProcessor()
-    {
-        if(pollClientThPtr_ && pollClientThPtr_->joinable())
-            pollClientThPtr_->join();
-    }
 
-    //main thread
     void run()
     {
         connectaAll();
-        // pollClientThPtr_ = std::make_unique<std::thread>(&WebChatProcessor::otherThreadToWebSpcketPoll, this);
 
         while(isWorking_)
         {
@@ -49,8 +40,6 @@ private:
 
     bool isWorking_ = true;
 
-    std::unique_ptr<std::thread> pollClientThPtr_ = nullptr;
-
 private:
 
     void connectaAll()
@@ -70,7 +59,6 @@ private:
             Service::log.log("Sucsessful connect to rcon.", LogLevel::Info);
     }
 
-    // other thread
     void otherThreadToWebSpcketPoll()
     {
         while(isWorking_)
@@ -80,7 +68,6 @@ private:
         }
     }
 
-    // other thread
     void reconnectToServer()
     {
         if(client_.isConnected() && isWorking_)
@@ -125,7 +112,6 @@ private:
 
 private:
 
-    // other thread
     void onConnect()
     {
         Service::log.log("Connect to server.", LogLevel::Info);
@@ -134,14 +120,12 @@ private:
         client_.sendMessage(key.dump());
     }
 
-    // other thread
     void onDisconnect(websocket::close_code code)
     {
         Service::log.log("Connect to server is failed. ", LogLevel::Error);
         reconnectToServer();
     }
 
-    // other thread
     void onMessage(const std::string& str)
     {
         try
@@ -170,7 +154,6 @@ private:
         }
     }
 
-    //main thread
     void sendMessageToServer(const LogMessage& msg)
     {        
         Message resMsg;
