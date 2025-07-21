@@ -23,7 +23,7 @@ public:
         ws_.auto_fragment(true);
 
         pollCallSettings_.first = false;
-        pollCallSettings_.second = std::this_thread::get_id();
+        // pollCallSettings_.second = std::this_thread::get_id();
     }
     ~WebSocketClient()
     {
@@ -37,8 +37,10 @@ public:
 
     void setSettings(const std::string& ip, const std::string& port)
     {
-        if(pollCallSettings_.first && pollCallSettings_.second == std::this_thread::get_id())
+        if(pollCallSettings_.first)
             throw std::logic_error("You cannot force a change of settings in the callback functions when \"poll\" is running.");
+        // if(pollCallSettings_.first && pollCallSettings_.second == std::this_thread::get_id())
+        //     throw std::logic_error("You cannot force a change of settings in the callback functions when \"poll\" is running.");
         settings_.ip = ip;
         settings_.port = port;
         settings_.results = tcp::resolver(io_).resolve(ip, port);
@@ -68,7 +70,7 @@ public:
     void disconnect(websocket::close_code code = websocket::close_code::normal)
     {
         if (!isConnected_)
-        return;
+            return;
         isConnected_ = false;
         try
         {
@@ -90,7 +92,10 @@ public:
     {
         // if(!isConnected_)
         //     return;
-        if(pollCallSettings_.first && pollCallSettings_.second == std::this_thread::get_id())
+        // if(pollCallSettings_.first && pollCallSettings_.second == std::this_thread::get_id())
+        //     throw std::logic_error("It is forbidden to call \"poll\" from callback functions.");
+
+        if(pollCallSettings_.first)
             throw std::logic_error("It is forbidden to call \"poll\" from callback functions.");
 
         pollCallSettings_.first = true;
