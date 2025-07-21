@@ -168,7 +168,7 @@ private:
         resMsg.msg["text"] = msg.msg;
         
         nlohmann::json json = resMsg.toJson();
-        client_.sendMessage(json.dump());
+        client_.sendMessage(std::move(json.dump()));
     }
 
 };
