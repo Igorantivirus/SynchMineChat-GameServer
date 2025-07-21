@@ -48,7 +48,7 @@ private:
             Service::log.log("Unable to open log file: " + Service::config.MINECRAFT_LOG_FILE, LogLevel::Error);
             return;
         }
-        std::streamsize fileSize = getFileSize(logFile);
+        std::streamsize fileSize = std::filesystem::file_size(Service::config.MINECRAFT_LOG_FILE);
         std::streamsize lastSize = getLastPos();
         
         if(lastSize < fileSize)
