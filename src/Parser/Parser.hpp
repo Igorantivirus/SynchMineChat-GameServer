@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <exception>
 #include <fstream>
 #include <filesystem>
 #include <limits>
@@ -16,60 +17,45 @@ public:
     MinecraftLogParser()
     {
         outLastPosFile((std::numeric_limits<std::streamsize>::max)());
-        // checkLastPosFile();
+        openLogFile();
     }
 
     void parse(std::queue<LogMessage> &queue)
     {
-        std::ifstream logFile;
-        openLogFile(logFile);
+        logFile_.clear();
+        logFile_.seekg(lastPos_);
         
         std::string line;
         LogMessage msg;
-        while (getline(logFile, line))
+        while (getline(logFile_, line))
             if(msg.parseFromString(line))
                 queue.push(msg);
 
-        // if(queue.size() > 1)
-        // {
-        //     std::cout << "A\n";
-        // }
-
-        logFile.close();
+        outLastPosFile(std::filesystem::file_size(Service::config.MINECRAFT_LOG_FILE));
     }
 
 private:
 
-    void openLogFile(std::ifstream& logFile)
+    std::ifstream logFile_;
+    std::streamsize lastPos_ = (std::numeric_limits<std::streamsize>::max)();
+
+    void openLogFile()
     {
-        logFile.open(Service::config.MINECRAFT_LOG_FILE, std::ios::in | std::ios::binary);
-        if (!logFile.is_open())
+        logFile_.open(Service::config.MINECRAFT_LOG_FILE, std::ios::in | std::ios::binary);
+        if (!logFile_.is_open())
         {
             Service::log.log("Unable to open log file: " + Service::config.MINECRAFT_LOG_FILE, LogLevel::Error);
-            return;
+            throw std::logic_error("Unable to open log file: ");
         }
-        std::streamsize fileSize = std::filesystem::file_size(Service::config.MINECRAFT_LOG_FILE);
-        std::streamsize lastSize = getLastPos();
-        
-        if(lastSize < fileSize)
-            logFile.seekg(lastSize, std::ios_base::beg);
-        else
-            logFile.seekg(fileSize, std::ios_base::beg);
+        const std::streamsize fileSize = std::filesystem::file_size(Service::config.MINECRAFT_LOG_FILE);
+        const std::streamsize lastSize = getLastPos();
 
-        outLastPosFile(fileSize);
+        lastPos_ = lastSize < fileSize ? lastSize : fileSize;
     }
-
-    // void checkLastPosFile()
-    // {
-    //     if(std::filesystem::exists(Service::config.LAST_POS_FILE))
-    //         return;
-    //     std::ofstream out(Service::config.LAST_POS_FILE);
-    //     out << std::streamsize(0);
-    //     out.close();
-    // }
     
     void outLastPosFile(const std::streamsize pos)
     {
+        lastPos_ = pos;
         std::ofstream out(Service::config.LAST_POS_FILE);
         out << pos;
         out.close();
@@ -85,55 +71,4 @@ private:
         in.close();
         return res;
     }
-    std::streamsize getFileSize(std::ifstream& logFile)
-    {
-        logFile.ignore((std::numeric_limits<std::streamsize>::max)());
-        std::streamsize fileSize = logFile.gcount();
-        logFile.clear();
-        return fileSize;
-    }
-
-    //Код Коли, оставил, чтоб не потерять
-    // void old()
-    // {
-    //     using namespace std;
-    //     static streamsize latestLength = 0;
-    //     static bool firstRun = true;
-    //     if (firstRun)
-    //     {
-    //         firstRun = false;
-    //         ifstream ifs(config.latest_length_path);
-    //         if (ifs.is_open())
-    //         {
-    //             ifs >> latestLength;
-    //             ifs.close();
-    //         }
-    //     }
-    //     ifstream logFile(logFilePath, ios::in | ios::binary);
-    //     if (!logFile.is_open())
-    //     {
-    //         cerr << "Error: Unable to open log file: " << logFilePath << endl;
-    //         return;
-    //     }
-    //     logFile.ignore((numeric_limits<streamsize>::max)());
-    //     streamsize length = logFile.gcount();
-    //     logFile.clear();
-    //     logFile.seekg(length < latestLength ? streamsize(0) : latestLength, ios_base::beg);
-    //     latestLength = length;
-    //     ofstream ofs(config.latest_length_path);
-    //     if (ofs.is_open())
-    //     {
-    //         ofs << latestLength;
-    //         ofs.close();
-    //     }
-    //     string line;
-    //     while (getline(logFile, line))
-    //     {
-    //         if (line.find("[Not Secure]") != string::npos)
-    //         {
-    //             queue.push_back((line.substr(line.find("[Not Secure]") + 13)));
-    //         }
-    //     }
-    //     logFile.close();
-    // }
 };
