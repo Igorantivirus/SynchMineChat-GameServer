@@ -1,7 +1,6 @@
 #pragma once
 
 #include <string>
-#include <mutex>
 #include <queue>
 
 #include <rconpp/rcon.h>

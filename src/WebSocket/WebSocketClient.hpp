@@ -2,8 +2,6 @@
 
 #include <utility>
 #include <string>
-#include <mutex>
-#include <atomic>
 #include <functional>
 
 #include <boost/beast.hpp>

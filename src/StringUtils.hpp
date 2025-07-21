@@ -2,7 +2,6 @@
 
 #include <list>
 #include <string>
-#include <format>
 
 namespace StringUtils
 {
